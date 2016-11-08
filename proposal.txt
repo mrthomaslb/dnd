@@ -1,0 +1,5 @@
+Thomas Lehman-Borer and Rachel Chamberlain
+Final Project Proposal
+11 November 2016
+
+We are hoping to create a program that will facilitate with the role-playing game Dungeouns and Dragons by completing menial tasks for the Dungeon Master (DM), who acts as facilitator during gameplay. While some actions (rolling dice, drawing and perusing maps) are essential parts of the game that should not be automated, other parts (keeping track of various character sheets, engaging in combat, etc.) can be tedious and would be benefited by some level of automation. To that end, we hope to create a module that can be imported into the python shell in order to expidite the more tedious aspects of gameplay. In order to fight feature creep, we have listed out several tiers of features by priority, below.
