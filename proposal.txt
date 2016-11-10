@@ -10,6 +10,9 @@ PRIMARY GOALS
 3. The dnd.py module will also have a combat function which accepts two lists. The first list has all of the character objects and the second has all of the monster objects. The function randomly orders the characters and monsters (as if rolling for initiative) to determine the order of attack. The function asks for input from the user (the DM) to determine what each character and monster does. The DM will be able to say that the character attacks a particular monster with a particular weapon, and the function will determine (based on randomness and the armor of the monster) whether the monster was hit. If the attack was successful, the function will ask the player to roll a given number of dice. The DM enters the result of the real-life die roll, and the monster's health is reduced by that value. The combat function continues cycling through all the characters and monsters with positive health until all the monsters or all the characters are defeated.
 
 SECONDARY GOALS
+1. Use password-encryption (pulled from Lab 5) to secure the campaign data text file.
+2. Give characters selection of weapon to use via arrow keys (instead of needing to type in name of weapon each time).
+3. Create function that keeps track of in-game date and time (time must be initialized, DM must say when an amount of time has passed).
 
 TERTIARY GOALS
 
