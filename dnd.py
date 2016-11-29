@@ -1,33 +1,15 @@
-##### BRAINSTORM #####
-# colored output, look into termcolor module?
-# monster class
-# --probably similar to characters, but don't need nearly as much detail
-# --health, armor, attacks, maybe something else?
-# weapon class
-# supplies in dictionary where value is quantity
-# easier commands (such as >>>2d4 instead of >>>dice(2,4)
-# read in campaigns from encrypted files (via DM's password) w/ checksum
-# extensive help pages & explanations
-# combat function/class?
-# --rolling for initiative for all characters & monsters
-# --giving characters selection of weapons to use, via arrow key selection?
-# --allow characters to fight each other
-# --need to consider position in dungeon/when monsters enter combat?
-# keep track of in-game date & time, announce when characters must eat/rest
-# keep track of real life date & time to tag notes & name save files
-####################
-
 from random import randint
 
 
 class SentientBeing:
-    '''Constructor'''
-    def __init__(self, health, weapon, armor):
-        self.__health = health
-        self.__weapon = weapon
-        self.__armor = armor
 
-    '''Getters'''
+    ###CONSTRUCTOR###
+    def __init__(self, health, weapon, armor):
+        self.__health = health #list with two items
+        self.__weapon = weapon #dictionary
+        self.__armor = armor   #integer
+
+    ###GETTERS###
     def getHealth(self):
         return self.__health
 
@@ -37,7 +19,13 @@ class SentientBeing:
     def getWeapon(self):
         return self.__weapon
 
-    '''Setters?'''
+    ###SETTERS###
+    def setHealth(self, change):
+        if change == 0: return
+        elif change > 0:
+        elif change < 0:
+
+    ###OTHERS###
     def attack(self, being):
         wDam = self.__weapon.getDamage()
         bArm = being.getArmor()
@@ -108,4 +96,4 @@ def dice(quantity, sides):
         dice.append(str(roll))
         total += roll
     print('Rolls:', ' '.join(dice))
-    print('Sum:', total)
+print('Sum:', total)
