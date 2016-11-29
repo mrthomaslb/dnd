@@ -3,13 +3,13 @@ from random import randint
 
 class SentientBeing:
 
-    ###CONSTRUCTOR###
+    ### CONSTRUCTOR ###
     def __init__(self, health, weapon, armor):
-        self.__health = health #list with two items
+        self.__health = health #list with two items -> [current, max]
         self.__weapon = weapon #dictionary
         self.__armor = armor   #integer
 
-    ###GETTERS###
+    ### GETTERS ###
     def getHealth(self):
         return self.__health
 
@@ -19,17 +19,27 @@ class SentientBeing:
     def getWeapon(self):
         return self.__weapon
 
-    ###SETTERS###
-    def setHealth(self, change):
-        if change == 0: return
-        elif change > 0:
-        elif change < 0:
+    ### SETTERS ###
+    def changeHealth(self, change):
+        current = self.__health[0]
+        max = self.__health[1]
+        if current + change < 0:
+            self.___health[0] = 0
+        elif current + change > max:
+            self.__health[0] = max
+        else:
+            self.__health[0] = self.__health[0] + change
+        
+    def setMaxHealth(self, val):
+        self.__health.pop()
+        self.__append(val)
 
-    ###OTHERS###
+    ### OTHERS ###
     def attack(self, being):
         wDam = self.__weapon.getDamage()
         bArm = being.getArmor()
         if wDam > bArm:
+            health
             being.__health = being.__health - wDam + bArm
             # this is assuming armor only blocks a set amount of damage
         elif wDam <= bArm:
@@ -82,10 +92,7 @@ class weapon:
     def getDamage(self):
         return self.__damage
 
-
-# class armor(self, )
-
-
+    
 def dice(quantity, sides):
     # look into making functions of 1 or 2 parameters
     # in this case, it would assume 1 die if there were 1 parameter given
