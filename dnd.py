@@ -1,52 +1,126 @@
-#####BRAINSTORM#####
-#colored output, look into termcolor module?
-#monster class
-###probably similar to characters, but don't need nearly as much detail
-###health, armor, attacks, maybe something else?
-#weapon class
-#supplies in dictionary where value is quantity
-#easier commands (such as >>>2d4 instead of >>>dice(2,4)
-#read in campaigns from encrypted files (via DM's password) w/ checksum
-#extensive help pages & explanations
-#combat function/class?
-###rolling for initiative for all characters & monsters
-###giving characters selection of weapons to use, via arrow key selection?
-###allow characters to fight each other
-###need to consider position in dungeon/when monsters enter combat?
-#keep track of in-game date & time, announce when characters must eat/rest
-#keep track of real life date & time to tag notes & name save files
-####################
-
 from random import randint
 
-class character:
 
-    ####CONSTRUCTOR####
-    def __init__(self, Name, Class, Lvl):
-        self.__name = Name
-        self.__class = Class
-        self.__level = Lvl
-        #everything else on a character sheet: alignment, 6 physical attributes,
-        #experience (linked to lvlUp), health, $ (in different denominations),
-        #abilities and magic, supplies, armor class, character notes, species
+class SentientBeing:
+    ### CONSTRUCTOR ###
+    def __init__(self, experience, health, species, attacks, armor):
+        self.__experience = experience
+        self.__health = health  # list with two items -> [current, max]
+        self.__species = species
+        self.__attacks = attacks
+        self.__armor = armor  # integer
 
-    ####GETTERS####
+    ### GETTERS ###
+
+    def getHealth(self):
+        return self.__health
+
+    def getArmor(self):
+        return self.__armor
+
+    def getAttacks(self):
+        return self.__attacks
+
+    ### SETTERS ###
+    def changeHealth(self, change):
+        current = self.__health[0]
+        max = self.__health[1]
+        if current + change < 0:
+            self.___health[0] = 0
+        elif current + change > max:
+            self.__health[0] = max
+        else:
+            self.__health[0] = self.__health[0] + change
+
+    def setMaxHealth(self, val):
+        self.__health.pop()
+        self.__append(val)
+
+    ### OTHERS ###
+    def attack(self, being):
+        pass
+
+
+class character(SentientBeing):
+    '''Constructor'''
+
+    def __init__(self, player, level, experience, health, species, armor, money, attacks):
+        self.__player = player
+        self.__level = level
+        self.__money = money
+        super().__init__(experience, health, species, attacks, armor)
+
+
+    ### GETTERS ###
     def chrSheet(self):
         pass
-        #print out a character sheet nicely (centered name, etc.)
+        # print out a character sheet nicely (centered name, etc.)
 
-    ####SETTERS####
+    def getMoney(self):
+        pass
+
+    def playerName(self):
+        return self.__player
+
+    def getLevel(self):
+        pass
+
+    ### SETTERS ###
+
     def lvlUp(self):
         self.__level += 1
 
+    def addAttack(self):
+        pass
+
+
+class monster(SentientBeing):
+    
+    ### CONSTRUCTOR ###
+    def __init__(self,experience, health, species, attacks, armor):
+        super().__init__(health, attacks, armor)
+
+
 def dice(quantity, sides):
-    #look into making functions of 1 or 2 parameters
-    #in this case, it would assume 1 die if there were 1 parameter given
+    # look into making functions of 1 or 2 parameters
+    # in this case, it would assume 1 die if there were 1 parameter given
     dice = []
     total = 0
     for i in range(quantity):
-        roll = randint(1,sides)
+        roll = randint(1, sides)
         dice.append(str(roll))
         total += roll
-    print('Rolls:',' '.join(dice))
-    print('Sum:',total)
+    print('Rolls:', ' '.join(dice))
+    print('Sum:', total)
+
+
+def newChar():
+    print("Begin new character construction.\n")
+
+    player = input("What is the player name? (enter a string) ")
+    level = input("What level is the character? (enter an integer)" )
+    experience = input("How much experience does the character have? (enter an integer)")
+    health = input("How much base health does the character have? (enter an integer) ")
+    species = input("What species is the character? (enter a string) ")
+
+    armor = 9
+    aCont = y
+    while aCont == y:
+        armor = input("What armor does the character have? (enter armor class (integer 2 - 9)) ")
+        if armor >= 2 and armor <= 9:
+            aCont = n
+
+    money = input("How much money does your character have? (enter an integer) ")
+
+    attacks = {}
+    print("You will need to set your attacks separately using addAttack() .")
+    return character(player, level, experience, health, species, armor, money, attacks)
+
+
+def newMonster():
+    # experience, health, species, attacks, armor
+    pass
+
+
+def combat(characters, monsters):
+    pass
