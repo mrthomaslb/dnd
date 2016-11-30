@@ -1,5 +1,6 @@
 from random import randint
 
+charList = []
 
 class SentientBeing:
     ### CONSTRUCTOR ###
@@ -20,6 +21,9 @@ class SentientBeing:
 
     def getAttacks(self):
         return self.__attacks
+    
+    def getExp(self):
+        return self.__experience
 
     ### SETTERS ###
     def changeHealth(self, change):
@@ -114,8 +118,25 @@ def newChar():
 
     attacks = {}
     print("You will need to set your attacks separately using addAttack() .")
+    print('Append the character to charList so that it is saved.')
     return character(player, level, experience, health, species, armor, money, attacks)
 
+def save():
+    """Disclaimer: I wrote this in github and did not test the code"""
+    filename = input('Filename: ')
+    fh = open(filename,'w')
+    
+    fh.write('CHARS\n')
+    for char in charList:
+        attacks = ''
+        for key in char.getAttacks():
+            attacks += key + ',' + char.getAttacks()[key] + ';'
+        attacks = attacks[:-1]
+        attributes = [char.playerName(),str(char.getLevel()),str(char.getExp()),str(char.getHealth())[1:-1],char.getSpecies(),
+                     str(char.getArmor()),str(char.getMoney())[1:-1],attacks]
+        fh.write(':'.join(attributes)+'\n')
+    
+    fh.close()
 
 def newMonster():
     # experience, health, species, attacks, armor
