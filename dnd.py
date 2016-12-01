@@ -132,9 +132,23 @@ def save():
         for key in char.getAttacks():
             attacks += key + ',' + char.getAttacks()[key] + ';'
         attacks = attacks[:-1]
+
+        #Rachel, I think this was the order of things you wanted. Can you verify?
         attributes = [char.playerName(),str(char.getLevel()),str(char.getExp()),str(char.getHealth())[1:-1],char.getSpecies(),
                      str(char.getArmor()),str(char.getMoney())[1:-1],attacks]
         fh.write(':'.join(attributes)+'\n')
+        
+    fh.write('ENDCHARS\n')
+    
+    fh.close()
+
+def load():
+    filename = input('Filename: ')
+    fh = open(filename, 'r')
+    
+    line = fh.readline() #should say CHARS
+    while 'ENDCHARS' not in line:
+        line = fh.readline()
     
     fh.close()
 
