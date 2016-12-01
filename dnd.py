@@ -50,10 +50,11 @@ class SentientBeing:
         pass
 
 
-class character(SentientBeing):
+class Character(SentientBeing):
     '''Constructor'''
 
-    def __init__(self, player, level, experience, health, species, armor, money, attacks):
+    def __init__(self,name, player, level, experience, health, species, armor, money, attacks):
+        self.__name = name
         self.__player = player
         self.__level = level
         self.__money = money
@@ -64,9 +65,6 @@ class character(SentientBeing):
     def chrSheet(self):
         pass
         # print out a character sheet nicely (centered name, etc.)
-
-        # Can we just do this as a __str__ method? I feel like it would be a
-        # little more user-friendly
 
     def getMoney(self):
         pass
@@ -85,8 +83,13 @@ class character(SentientBeing):
     def addAttack(self):
         pass
 
+    ### OTHERS ###
 
-class monster(SentientBeing):
+    def __str__(self):
+        return self.__name
+
+
+class Monster(SentientBeing):
     
     ### CONSTRUCTOR ###
     def __init__(self,experience, health, species, attacks, armor):
@@ -114,28 +117,37 @@ def newChar():
     # the variables to the desired types. Also, I think experience is a float.
     print("Begin new character construction.\n")
 
-    player = input("What is the player name? (enter a string) ")
-    level = input("What level is the character? (enter an integer)" )
-    experience = input("How much experience does the character have? (enter an integer)")
-    health = input("How much base health does the character have? (enter an integer) ")
-    species = input("What species is the character? (enter a string) ")
+    name = input('What is the character name? ')
+    player = input("What is the player name? ")
+    level = int(input("What level is the character?" ))
+    experience = float(input("How much experience does the character have? "))
 
-    armor = 9
-    aCont = y
-    while aCont == y:
-        armor = input("What armor does the character have? (enter armor class (integer 2 - 9)) ")
-        if armor >= 2 and armor <= 9:
-            aCont = n
+    health1 = int(input("What is the character's max health? "))
+    health0 = int(input("What is the character's current health? "))
+    health = [health0, health1]
 
-    money = input("How much money does your character have? (enter an integer) ")
+    species = input("What species is the character? ")
+    armor = int(input("What is the character's armor class? "))
+
+    print('How much of each of these monetary denominations does the character have?')
+    plat = input('Platinum: ')
+    gold = input('Gold: ')
+    silv = input('Silver: ')
+    copp = input('Copper: ')
+    elec = input('Electrum: ')
+    money = [int(plat), int(gold), int(silv), int(copp), int(elec)]
 
     attacks = {}
     print("You will need to set your attacks separately using addAttack() .")
     print('Append the character to charList so that it is saved.')
-    return character(player, level, experience, health, species, armor, money, attacks)
+    return Character(name, player, level, experience, health, species, armor, money, attacks)
 
-def save():
-    """Disclaimer: I wrote this in github and did not test the code"""
+
+def newMonster():
+    # experience, health, species, attacks, armor
+    pass
+
+def save(charList):
     filename = input('Filename: ')
     fh = open(filename,'w')
     
@@ -146,32 +158,43 @@ def save():
             attacks += key + ',' + char.getAttacks()[key] + ';'
         attacks = attacks[:-1]
 
-        #Rachel, I think this was the order of things you wanted. Can you verify?
-        attributes = [char.playerName(), str(char.getLevel()), str(char.getExp()),
-                      str(char.getHealth())[1:-1], char.getSpecies(),
-                      str(char.getArmor()), str(char.getMoney())[1:-1], attacks]
+        attributes = [char.playerName(),str(char.getLevel()),str(char.getExp()),
+                      str(char.getHealth())[1:-1],char.getSpecies(),
+                      str(char.getArmor()),str(char.getMoney())[1:-1],attacks]
         fh.write(':'.join(attributes)+'\n')
         
     fh.write('ENDCHARS\n')
     
     fh.close()
+    print('Character data saved.')
 
 def load():
+    """This function reads in from a save file and returns a list of character
+objects. For ease of use, user should say 'charList = load()'."""
+    characters = []
+
     filename = input('Filename: ')
     fh = open(filename, 'r')
     
     line = fh.readline() #should say CHARS
-    while True:
+
+    while True: #for each character
         line = fh.readline()
-        if 'ENDCHARS' in line: break #I think saying while 'END' not in line would be off by 1
 
-        #dict making examples: https://docs.python.org/3/library/stdtypes.html#dict
-    
+        if 'ENDCHARS' in line: break
+        #I think saying while 'END' not in line would be off by 1
+
+        #formatting into desired types
+        args = line.split(':')
+        args[1] = int(args[1])
+
+        #dict ex's: https://docs.python.org/3/library/stdtypes.html#dict
+        #d = dict([('two',2),('one',1),('three',3)])
+
+        characters.append(Character(*args))
+
     fh.close()
-
-def newMonster():
-    # experience, health, species, attacks, armor
-    pass
+    return characters
 
 def combat(characters, monsters):
     pass
