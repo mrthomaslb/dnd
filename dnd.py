@@ -1,4 +1,4 @@
-from random import r
+import random as r
 
 charList = []
 
@@ -171,25 +171,27 @@ def newMonster():
 
 def save(charList):
     filename = input('Filename: ')
-    fh = open(filename, 'w')
-
+    fh = open(filename,'w')
+    
     fh.write('CHARS\n')
     for char in charList:
-        attacks = ''
+        attackKeys = ''
+        attackVals = ''
         for key in char.getAttacks():
-            attacks += key + ',' + char.getAttacks()[key] + ';'
-        attacks = attacks[:-1]
+            attackKeys += key + ','
+            attackVals += char.getAttacks()[key] + ','
+        attacks = attackKeys[:-1] + ';' + attackVals[:-1]
 
-        attributes = [char.playerName(), str(char.getLevel()), str(char.getExp()),
-                      str(char.getHealth())[1:-1], char.getSpecies(),
-                      str(char.getArmor()), str(char.getMoney())[1:-1], attacks]
-        fh.write(':'.join(attributes) + '\n')
-
+        attributes = [char.getName(), char.playerName(), str(char.getLevel()),
+                      str(char.getExp()), str(char.getHealth())[1:-1],
+                      char.getSpecies(), str(char.getArmor()),
+                      str(char.getMoney())[1:-1], attacks]
+        fh.write(':'.join(attributes)+'\n')
+        
     fh.write('ENDCHARS\n')
-
+    
     fh.close()
     print('Character data saved.')
-
 
 def load():
     """This function reads in from a save file and returns a list of character
@@ -198,21 +200,27 @@ objects. For ease of use, user should say 'charList = load()'."""
 
     filename = input('Filename: ')
     fh = open(filename, 'r')
+    
+    line = fh.readline() #should say CHARS
 
-    line = fh.readline()  # should say CHARS
-
-    while True:  # for each character
+    while True: #for each character
         line = fh.readline()
 
         if 'ENDCHARS' in line: break
-        # I think saying while 'END' not in line would be off by 1
+        #I think saying while 'END' not in line would be off by 1
 
-        # formatting into desired types
+        #formatting into desired types
         args = line.split(':')
-        args[1] = int(args[1])
-
-        # dict ex's: https://docs.python.org/3/library/stdtypes.html#dict
-        # d = dict([('two',2),('one',1),('three',3)])
+        args[2] = int(args[2]) #level
+        args[3] = float(args[3]) #experience
+        args[4] = args[4].split(',') #health
+        args[6] = int(args[6]) #armor
+        args[7] = args[7].split(',') #$
+        
+        attacks    = args[8].split(';')
+        attackKeys = attacks[0].split(',')
+        attackVals = attacks[1].split(',')
+        args[8] = dict(zip(attackKeys,attackVals))
 
         characters.append(Character(*args))
 
