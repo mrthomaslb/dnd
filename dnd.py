@@ -45,7 +45,7 @@ class SentientBeing:
         if self.__health[0] > self.__health[1]:
             self.__health[0] = self.__health[1]
 
-    #still need to test
+    #not working for monsters
     def addAttack(self):
         name = input("What is the name of the attack or weapon? ")
         calc = input("How is the damage calculated? (ex: d6 + 1) ")
@@ -227,12 +227,15 @@ objects. For ease of use, user should say 'charList = load()'."""
         attackVals = attacks[1].split(',')
         args[8] = dict(zip(attackKeys,attackVals))
 
+        if '' in args[8]:
+            del args[8]['']
+
         characters.append(Character(*args))
 
     fh.close()
     return characters
 
-
+#not accepting chars list right
 def combat():
     chars = eval(input("Input the characters involved as a list []: "))
     monst = eval(input("Input the monsters involved as a list []: "))
