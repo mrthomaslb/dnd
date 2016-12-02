@@ -226,3 +226,29 @@ objects. For ease of use, user should say 'charList = load()'."""
 
     fh.close()
     return characters
+
+
+def combat():
+    chars = eval(input("Input the characters involved as a list []: "))
+    monst = eval(input("Input the monsters involved as a list []: "))
+
+    combatants = chars + monst
+    r.shuffle(combatants)
+
+    print("The order is : ", combatants)
+
+    while monst != [] or chars != []:
+        for com in combatants:
+            print("It is the turn for ", com)
+            action = input("What does the character do? When done with turn, type 'next' to continue.")
+            while action.lower() != "next":
+                eval(com.action)
+
+            for char in combatants:
+                if com.getHeatlh == 0:
+                    combatants.remove(char)
+    if chars == []:
+        print("Battle is over. The winner is the monsters.")
+    elif monst == []:
+        print("Battle is over. The winner is the characters.")
+
