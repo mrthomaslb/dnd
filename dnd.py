@@ -1,9 +1,9 @@
-from random import randint
+from random import r
 
 charList = []
 
-class SentientBeing:
 
+class SentientBeing:
     ### CONSTRUCTOR ###
     def __init__(self, experience, health, species, attacks, armor):
         self.__experience = experience
@@ -22,7 +22,7 @@ class SentientBeing:
 
     def getAttacks(self):
         return self.__attacks
-    
+
     def getExp(self):
         return self.__experience
 
@@ -53,35 +53,45 @@ class SentientBeing:
 class Character(SentientBeing):
     '''Constructor'''
 
-    def __init__(self,name, player, level, experience, health, species, armor, money, attacks):
+    def __init__(self, name, player, level, experience, health, species, armor, money, attacks):
         self.__name = name
         self.__player = player
         self.__level = level
         self.__money = money
         super().__init__(experience, health, species, attacks, armor)
 
-
     ### GETTERS ###
     def chrSheet(self):
         pass
         # print out a character sheet nicely (centered name, etc.)
 
+    def getName(self):
+        return self.__name
+
     def getMoney(self):
-        pass
+        # Possibly change this to print it nicely later
+        return self.__money
 
     def playerName(self):
         return self.__player
 
     def getLevel(self):
-        pass
+        return self.__level
 
     ### SETTERS ###
 
     def lvlUp(self):
         self.__level += 1
+        for key in self.__attacks:
+            val = self.__attacks.get(key)
+            calc = val[1:]
+            self.__attacks[key] = str(self.getLevel()) + calc
 
     def addAttack(self):
-        pass
+        name = input("What is the name of the weapon? ")
+        calc = input("How is the damage calculated? (ex: d6 + 1) ")
+        self.__attacks[name] = str(self.getLevel()) + calc
+        print(name, " has been added to known attacks for ", self.__name)
 
     ### OTHERS ###
 
@@ -90,10 +100,12 @@ class Character(SentientBeing):
 
 
 class Monster(SentientBeing):
-    
     ### CONSTRUCTOR ###
-    def __init__(self,experience, health, species, attacks, armor):
+    def __init__(self, experience, health, species, attacks, armor):
         super().__init__(experience, health, species, attacks, armor)
+
+    def addAttack(self):
+        pass
 
 
 def dice(quantity, sides):
@@ -103,7 +115,7 @@ def dice(quantity, sides):
     total = 0
 
     for i in range(quantity):
-        roll = randint(1, sides)
+        roll = r.randint(1, sides)
         dice.append(str(roll))
         total += roll
 
@@ -119,7 +131,7 @@ def newChar():
 
     name = input('What is the character name? ')
     player = input("What is the player name? ")
-    level = int(input("What level is the character?" ))
+    level = int(input("What level is the character?"))
     experience = float(input("How much experience does the character have? "))
 
     health1 = int(input("What is the character's max health? "))
@@ -138,19 +150,29 @@ def newChar():
     money = [int(plat), int(gold), int(silv), int(copp), int(elec)]
 
     attacks = {}
-    print("You will need to set your attacks separately using addAttack() .")
+    print("\nYou will need to set your attacks separately using addAttack() .")
     print('Append the character to charList so that it is saved.')
     return Character(name, player, level, experience, health, species, armor, money, attacks)
 
 
 def newMonster():
     # experience, health, species, attacks, armor
-    pass
+    print("Begin new monster construction.\n")
+    species = input("What is the species of this monster? ")
+    experience = float(input("What is the experience of this monster? "))
+    health1 = int(input("What is the max health of this monster? "))
+    health0 = health1
+    health = [health0, health1]
+    armor = input("What armor class does the monster have? ")
+    attacks = {}
+    print("\nou will need to set the monsters attacks separately using  addAttack() .")
+    return Monster(experience, health, species, attacks, armor)
+
 
 def save(charList):
     filename = input('Filename: ')
-    fh = open(filename,'w')
-    
+    fh = open(filename, 'w')
+
     fh.write('CHARS\n')
     for char in charList:
         attacks = ''
@@ -158,15 +180,16 @@ def save(charList):
             attacks += key + ',' + char.getAttacks()[key] + ';'
         attacks = attacks[:-1]
 
-        attributes = [char.playerName(),str(char.getLevel()),str(char.getExp()),
-                      str(char.getHealth())[1:-1],char.getSpecies(),
-                      str(char.getArmor()),str(char.getMoney())[1:-1],attacks]
-        fh.write(':'.join(attributes)+'\n')
-        
+        attributes = [char.playerName(), str(char.getLevel()), str(char.getExp()),
+                      str(char.getHealth())[1:-1], char.getSpecies(),
+                      str(char.getArmor()), str(char.getMoney())[1:-1], attacks]
+        fh.write(':'.join(attributes) + '\n')
+
     fh.write('ENDCHARS\n')
-    
+
     fh.close()
     print('Character data saved.')
+
 
 def load():
     """This function reads in from a save file and returns a list of character
@@ -175,26 +198,23 @@ objects. For ease of use, user should say 'charList = load()'."""
 
     filename = input('Filename: ')
     fh = open(filename, 'r')
-    
-    line = fh.readline() #should say CHARS
 
-    while True: #for each character
+    line = fh.readline()  # should say CHARS
+
+    while True:  # for each character
         line = fh.readline()
 
         if 'ENDCHARS' in line: break
-        #I think saying while 'END' not in line would be off by 1
+        # I think saying while 'END' not in line would be off by 1
 
-        #formatting into desired types
+        # formatting into desired types
         args = line.split(':')
         args[1] = int(args[1])
 
-        #dict ex's: https://docs.python.org/3/library/stdtypes.html#dict
-        #d = dict([('two',2),('one',1),('three',3)])
+        # dict ex's: https://docs.python.org/3/library/stdtypes.html#dict
+        # d = dict([('two',2),('one',1),('three',3)])
 
         characters.append(Character(*args))
 
     fh.close()
     return characters
-
-def combat(characters, monsters):
-    pass
