@@ -32,11 +32,11 @@ class SentientBeing:
     ### SETTERS ###
     def changeHealth(self, change):
         current = self.__health[0]
-        max = self.__health[1]
+        maximum = self.__health[1]
         if current + change < 0:
-            self.___health[0] = 0
-        elif current + change > max:
-            self.__health[0] = max
+            self.__health[0] = 0
+        elif current + change > maximum:
+            self.__health[0] = maximum
         else:
             self.__health[0] = self.__health[0] + change
 
@@ -45,8 +45,16 @@ class SentientBeing:
         if self.__health[0] > self.__health[1]:
             self.__health[0] = self.__health[1]
 
+    #still need to test
+    def addAttack(self):
+        name = input("What is the name of the attack or weapon? ")
+        calc = input("How is the damage calculated? (ex: d6 + 1) ")
+        self.__attacks[name] = str(self.getLevel()) + calc
+        print(name, " has been added to known attacks.")
+
     ### OTHERS ###
     def attack(self, being):
+        #probably don't need this
         pass
 
 
@@ -83,15 +91,9 @@ class Character(SentientBeing):
     def lvlUp(self):
         self.__level += 1
         for key in self.__attacks:
-            val = self.__attacks.get(key)
+            val = self.__attacks[key]
             calc = val[1:]
             self.__attacks[key] = str(self.getLevel()) + calc
-
-    def addAttack(self):
-        name = input("What is the name of the weapon? ")
-        calc = input("How is the damage calculated? (ex: d6 + 1) ")
-        self.__attacks[name] = str(self.getLevel()) + calc
-        print(name, " has been added to known attacks for ", self.__name)
 
     ### OTHERS ###
 
@@ -103,10 +105,6 @@ class Monster(SentientBeing):
     ### CONSTRUCTOR ###
     def __init__(self, experience, health, species, attacks, armor):
         super().__init__(experience, health, species, attacks, armor)
-
-    def addAttack(self):
-        pass
-
 
 def dice(quantity, sides):
     # look into making functions of 1 or 2 parameters
@@ -131,7 +129,7 @@ def newChar():
 
     name = input('What is the character name? ')
     player = input("What is the player name? ")
-    level = int(input("What level is the character?"))
+    level = int(input("What level is the character? "))
     experience = float(input("How much experience does the character have? "))
 
     health1 = int(input("What is the character's max health? "))
@@ -143,9 +141,9 @@ def newChar():
 
     print('How much of each of these monetary denominations does the character have?')
     plat = input('Platinum: ')
-    gold = input('Gold: ')
-    silv = input('Silver: ')
-    copp = input('Copper: ')
+    gold = input('Gold:     ')
+    silv = input('Silver:   ')
+    copp = input('Copper:   ')
     elec = input('Electrum: ')
     money = [int(plat), int(gold), int(silv), int(copp), int(elec)]
 
@@ -165,7 +163,7 @@ def newMonster():
     health = [health0, health1]
     armor = input("What armor class does the monster have? ")
     attacks = {}
-    print("\nou will need to set the monsters attacks separately using  addAttack() .")
+    print("\nYou will need to set the monsters attacks separately using  addAttack() .")
     return Monster(experience, health, species, attacks, armor)
 
 
@@ -213,10 +211,17 @@ objects. For ease of use, user should say 'charList = load()'."""
         args = line.split(':')
         args[2] = int(args[2]) #level
         args[3] = float(args[3]) #experience
+
         args[4] = args[4].split(',') #health
-        args[6] = int(args[6]) #armor
-        args[7] = args[7].split(',') #$
+        for i in range(len(args[4])):
+            args[4][i] = int(args[4][i])
         
+        args[6] = int(args[6]) #armor
+        
+        args[7] = args[7].split(',') #$
+        for i in range(len(args[7])):
+            args[7][i] = int(args[7][i])
+
         attacks    = args[8].split(';')
         attackKeys = attacks[0].split(',')
         attackVals = attacks[1].split(',')
@@ -251,4 +256,3 @@ def combat():
         print("Battle is over. The winner is the monsters.")
     elif monst == []:
         print("Battle is over. The winner is the characters.")
-
