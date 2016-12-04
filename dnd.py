@@ -12,10 +12,12 @@ class SentientBeing:
         self.__species = species
         self.attacks = attacks
         self.__armor = armor  # integer
-        if isinstance(self, Character) and self not in charList:
-            self.__appTo(charList)
-        if isinstance(self, Monster) and self not in monsList:
-            self.__appTo(monsList)
+        if isinstance(self, Character) == True:
+            if self not in charList:
+                self.__appTo(charList)
+        elif isinstance(self, Monster) == True:
+            if self not in monsList:
+                self.__appTo(monsList)
 
     ### GETTERS ###
     def getHealth(self):
