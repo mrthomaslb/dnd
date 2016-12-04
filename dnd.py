@@ -1,28 +1,24 @@
-import random as r
+from random import randint
 
 charList = []
 
-
 class SentientBeing:
+
     ### CONSTRUCTOR ###
     def __init__(self, experience, health, species, attacks, armor):
         self.__experience = experience
         self.__health = health  # list with two items -> [current, max]
         self.__species = species
-        self.__attacks = attacks
+        self.attacks = attacks
         self.__armor = armor  # integer
 
     ### GETTERS ###
-
     def getHealth(self):
         return self.__health
 
     def getArmor(self):
         return self.__armor
-
-    def getAttacks(self):
-        return self.__attacks
-
+    
     def getExp(self):
         return self.__experience
 
@@ -44,13 +40,6 @@ class SentientBeing:
         self.__health[1] = val
         if self.__health[0] > self.__health[1]:
             self.__health[0] = self.__health[1]
-
-    #not working for monsters
-    def addAttack(self):
-        name = input("What is the name of the attack or weapon? ")
-        calc = input("How is the damage calculated? (ex: d6 + 1) ")
-        self.__attacks[name] = str(self.getLevel()) + calc
-        print(name, " has been added to known attacks.")
 
     ### OTHERS ###
     def attack(self, being):
@@ -89,11 +78,8 @@ class Character(SentientBeing):
     ### SETTERS ###
 
     def lvlUp(self):
+        print('Any level-dependent attacks must be changed manually.')
         self.__level += 1
-        for key in self.__attacks:
-            val = self.__attacks[key]
-            calc = val[1:]
-            self.__attacks[key] = str(self.getLevel()) + calc
 
     ### OTHERS ###
 
@@ -123,8 +109,6 @@ def dice(quantity, sides):
 
 
 def newChar():
-    # The input function always returns a string, so we will need to convert all of
-    # the variables to the desired types. Also, I think experience is a float.
     print("Begin new character construction.\n")
 
     name = input('What is the character name? ')
@@ -148,13 +132,12 @@ def newChar():
     money = [int(plat), int(gold), int(silv), int(copp), int(elec)]
 
     attacks = {}
-    print("\nYou will need to set your attacks separately using addAttack() .")
+    print("\nYou will need to set your attacks separately.")
     print('Append the character to charList so that it is saved.')
     return Character(name, player, level, experience, health, species, armor, money, attacks)
 
 
 def newMonster():
-    # experience, health, species, attacks, armor
     print("Begin new monster construction.\n")
     species = input("What is the species of this monster? ")
     experience = float(input("What is the experience of this monster? "))
@@ -163,7 +146,7 @@ def newMonster():
     health = [health0, health1]
     armor = input("What armor class does the monster have? ")
     attacks = {}
-    print("\nYou will need to set the monsters attacks separately using  addAttack() .")
+    print("\nYou will need to set the monsters attacks separately.")
     return Monster(experience, health, species, attacks, armor)
 
 
@@ -245,7 +228,7 @@ def combat():
 
     print("The order is : ", combatants)
 
-    while monst != [] or chars != []:
+    while monst != [] and chars != []:
         for com in combatants:
             print("It is the turn for ", com)
             action = input("What does the character do? When done with turn, type 'next' to continue.")
