@@ -4,6 +4,7 @@ charList = []
 monsList = []
 
 class SentientBeing:
+
     ### CONSTRUCTOR ###
     def __init__(self, experience, health, species, attacks, armor):
         self.__experience = experience
@@ -11,12 +12,10 @@ class SentientBeing:
         self.__species = species
         self.attacks = attacks
         self.__armor = armor  # integer
-        if isinstance(self, Character) == True:
-            if self not in charList:
-                self.__appTo(charList)
-            elif self not in monsList:
-                self.__appTo(monsList)
-
+        if isinstance(self, Character) and self not in charList:
+            self.__appTo(charList)
+        if isinstance(self, Monster) and self not in monsList:
+            self.__appTo(monsList)
 
     ### GETTERS ###
     def getHealth(self):
@@ -24,7 +23,7 @@ class SentientBeing:
 
     def getArmor(self):
         return self.__armor
-
+    
     def getExp(self):
         return self.__experience
 
@@ -41,7 +40,7 @@ class SentientBeing:
             self.__health[0] = maximum
         else:
             self.__health[0] = self.__health[0] + change
-
+            
     def __appTo(self, ls):
         ls.append(self)
 
@@ -50,9 +49,15 @@ class SentientBeing:
         if self.__health[0] > self.__health[1]:
             self.__health[0] = self.__health[1]
 
+    def addExp(self, change):
+        pass
+
+    def setArmor(self, newArm):
+        pass
+
     ### OTHERS ###
     def attack(self, being):
-        # probably don't need this
+        #probably don't need this
         pass
 
 
@@ -100,7 +105,6 @@ class Monster(SentientBeing):
     ### CONSTRUCTOR ###
     def __init__(self, experience, health, species, attacks, armor):
         super().__init__(experience, health, species, attacks, armor)
-
 
 def dice(quantity, sides):
     # look into making functions of 1 or 2 parameters
@@ -162,8 +166,8 @@ def newMonster():
 
 def save(charList):
     filename = input('Filename: ')
-    fh = open(filename, 'w')
-
+    fh = open(filename,'w')
+    
     fh.write('CHARS\n')
     for char in charList:
         attackKeys = ''
@@ -177,13 +181,12 @@ def save(charList):
                       str(char.getExp()), str(char.getHealth())[1:-1],
                       char.getSpecies(), str(char.getArmor()),
                       str(char.getMoney())[1:-1], attacks]
-        fh.write(':'.join(attributes) + '\n')
-
+        fh.write(':'.join(attributes)+'\n')
+        
     fh.write('ENDCHARS\n')
-
+    
     fh.close()
     print('Character data saved.')
-
 
 def load():
     """This function reads in from a save file and returns a list of character
@@ -192,32 +195,32 @@ objects. For ease of use, user should say 'charList = load()'."""
 
     filename = input('Filename: ')
     fh = open(filename, 'r')
-
-    line = fh.readline()  # first line of file(CHARS)
+    
+    line = fh.readline() # first line (chars)
 
     while line != 'ENDCHARS':  # for each character
         line = fh.readline()
         print(line)
 
-        # formatting into desired types
+        #formatting into desired types
         args = line.split(':')
-        args[2] = int(args[2])  # level
-        args[3] = float(args[3])  # experience
+        args[2] = int(args[2]) #level
+        args[3] = float(args[3]) #experience
 
-        args[4] = args[4].split(',')  # health
+        args[4] = args[4].split(',') #health
         for i in range(len(args[4])):
             args[4][i] = int(args[4][i])
-
-        args[6] = int(args[6])  # armor
-
-        args[7] = args[7].split(',')  # $
+        
+        args[6] = int(args[6]) #armor
+        
+        args[7] = args[7].split(',') #$
         for i in range(len(args[7])):
             args[7][i] = int(args[7][i])
 
-        attacks = args[8].split(';')
+        attacks    = args[8].split(';')
         attackKeys = attacks[0].split(',')
         attackVals = attacks[1].split(',')
-        args[8] = dict(zip(attackKeys, attackVals))
+        args[8] = dict(zip(attackKeys,attackVals))
 
         if '' in args[8]:
             del args[8]['']
@@ -227,8 +230,7 @@ objects. For ease of use, user should say 'charList = load()'."""
     fh.close()
     return characters
 
-
-# not accepting chars list right
+#not accepting chars list right
 def combat():
     chars = eval(input("Input the characters involved as a list []: "))
     monst = eval(input("Input the monsters involved as a list []: "))
@@ -248,10 +250,6 @@ def combat():
             for char in combatants:
                 if com.getHeatlh() == 0:
                     combatants.remove(char)
-                    if char in chars:
-                        chars.remove(char)
-                    elif char in monst:
-                        monst.remove(char)
     if chars == []:
         print("Battle is over. The winner is the monsters.")
     elif monst == []:
