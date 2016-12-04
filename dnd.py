@@ -6,7 +6,8 @@ monsList = []
 class SentientBeing:
 
     ### CONSTRUCTOR ###
-    def __init__(self, experience, health, species, attacks, armor):
+    def __init__(self, name, experience, health, species, attacks, armor):
+        self.__name = name
         self.__experience = experience
         self.__health = health  # list with two items -> [current, max]
         self.__species = species
@@ -58,20 +59,31 @@ class SentientBeing:
         pass
 
     ### OTHERS ###
-    def attack(self, being):
-        #probably don't need this
-        pass
+    def __str__(self):
+        return self.__name
 
+    def attack(self, being):
+        print('What is the attack of choice?')
+        print(self.attacks)
+        attack = ''
+        while attack not in self.attacks:
+            attack = input('>> ')
+        hitDie = int(input('What is the result of a 1d20 roll? '))
+        hit = bool(input("If that's a hit, type anything and hit Enter. Otherwise, hit enter without typing anything."))
+        if hit:
+            attDie = int(input('What is the result of a ' +
+                               self.attacks[attack] + ' roll? '))
+            being.changeHealth(-attDie)
+            
 
 class Character(SentientBeing):
     '''Constructor'''
 
     def __init__(self, name, player, level, experience, health, species, armor, money, attacks):
-        self.__name = name
         self.__player = player
         self.__level = level
         self.__money = money
-        super().__init__(experience, health, species, attacks, armor)
+        super().__init__(name, experience, health, species, attacks, armor)
 
     ### GETTERS ###
     def chrSheet(self):
@@ -97,16 +109,12 @@ class Character(SentientBeing):
         print('Any level-dependent attacks must be changed manually.')
         self.__level += 1
 
-    ### OTHERS ###
-
-    def __str__(self):
-        return self.__name
-
-
 class Monster(SentientBeing):
     ### CONSTRUCTOR ###
-    def __init__(self, experience, health, species, attacks, armor):
-        super().__init__(experience, health, species, attacks, armor)
+    def __init__(self, name, experience, health, species, attacks, armor):
+        super().__init__(name, experience, health, species, attacks, armor)
+
+monsList = [Monster('Imp 1',40,[7,7],'Imp',{'bite':'2d6'},4)]
 
 def dice(quantity, sides):
     # look into making functions of 1 or 2 parameters
@@ -155,6 +163,7 @@ def newChar():
 
 def newMonster():
     print("Begin new monster construction.\n")
+    name = input('What shall we call the monster? ')
     species = input("What is the species of this monster? ")
     experience = float(input("What is the experience of this monster? "))
     health1 = int(input("What is the max health of this monster? "))
@@ -163,7 +172,7 @@ def newMonster():
     armor = input("What armor class does the monster have? ")
     attacks = {}
     print("\nYou will need to set the monsters attacks separately.")
-    return Monster(experience, health, species, attacks, armor)
+    return Monster(name, experience, health, species, attacks, armor)
 
 
 def save(charList):
@@ -241,18 +250,25 @@ def combat():
     combatants = chars + monst
     r.shuffle(combatants)
 
-    print("The order is : ", combatants)
+    print("\nThe order is:")
+    for com in combatants:
+        print('\t' + str(com))
 
     while monst != [] and chars != []:
         for com in combatants:
-            print("It is the turn for ", com)
-            action = input("What does the character do? When done with turn, type 'next' to continue.")
-            while action.lower() != "next":
-                eval(com.action)
+            print('\n'+str(com).upper())
+            action = input("What does the combatant do? When done with turn, type 'next' to continue.\n")
+            while action.lower().strip('\n') != "next":
+                eval(action)
 
             for char in combatants:
-                if com.getHeatlh() == 0:
+                if char.getHealth()[0] == 0:
                     combatants.remove(char)
+                    if com in chars:
+                        chars.remove(char)
+                    elif com in monst:
+                        monst.remove(char)
+
     if chars == []:
         print("Battle is over. The winner is the monsters.")
     elif monst == []:
