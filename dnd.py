@@ -32,6 +32,9 @@ class SentientBeing:
 
     def getSpecies(self):
         return self.__species
+    
+    def getName(self):
+        return self.__name
 
     ### SETTERS ###
     def changeHealth(self, change):
@@ -90,6 +93,7 @@ class Character(SentientBeing):
         pass
         # print out a character sheet nicely (centered name, etc.)
 
+    # put this in SentientBeing class
     def getName(self):
         return self.__name
 
@@ -157,7 +161,6 @@ def newChar():
 
     attacks = {}
     print("\nYou will need to set your attacks separately.")
-    print('Append the character to charList so that it is saved.')
     return Character(name, player, level, experience, health, species, armor, money, attacks)
 
 
@@ -188,7 +191,7 @@ def save(charList):
             attackVals += char.attacks[key] + ','
         attacks = attackKeys[:-1] + ';' + attackVals[:-1]
 
-        attributes = [char.getName(), char.playerName(), str(char.getLevel()),
+        attributes = [str(char), char.playerName(), str(char.getLevel()),
                       str(char.getExp()), str(char.getHealth())[1:-1],
                       char.getSpecies(), str(char.getArmor()),
                       str(char.getMoney())[1:-1], attacks]
@@ -261,6 +264,7 @@ def combat():
             while action.lower().strip('\n') != "next":
                 eval(action)
 
+            # When something dies in combat, it's off the list.
             for char in combatants:
                 if char.getHealth()[0] == 0:
                     combatants.remove(char)
