@@ -1,0 +1,4 @@
+CHARS
+Jedadiah:Thomas:3:3631.6:12, 12:Human:2:0, 5850, 5, 0, 0:sling (ranged),quarterstaff;3d6,3d6
+Jamalink:Priscilla:3:4661.8:17, 17:Human:3:0, 5899, 0, 0, 0:crossbow,sword;3d6,3d6 + 1
+ENDCHARS
