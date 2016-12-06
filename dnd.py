@@ -13,12 +13,6 @@ class SentientBeing:
         self.__species = species
         self.attacks = attacks
         self.__armor = armor  # integer
-        if isinstance(self, Character) == True:
-            if self not in charList:
-                self.__appTo(charList)
-        elif isinstance(self, Monster) == True:
-            if self not in monsList:
-                self.__appTo(monsList)
 
     ### GETTERS ###
     def getHealth(self):
@@ -46,9 +40,6 @@ class SentientBeing:
             self.__health[0] = maximum
         else:
             self.__health[0] = self.__health[0] + change
-            
-    def __appTo(self, ls):
-        ls.append(self)
 
     def setMaxHealth(self, val):
         self.__health[1] = val
@@ -65,18 +56,36 @@ class SentientBeing:
     def __str__(self):
         return self.__name
 
+    def __bool__(self):
+        if self.__health[0] == 0:
+            return False
+        else: return True
+
     def attack(self, being):
         print('What is the attack of choice?')
         print(self.attacks)
         attack = ''
         while attack not in self.attacks:
             attack = input('>> ')
+
+        #we could change this to eval so we could use dice function
         hitDie = int(input('What is the result of a 1d20 roll? '))
-        hit = bool(input("If that's a hit, type anything and hit Enter. Otherwise, hit enter without typing anything."))
-        if hit:
+
+        if self.minForHit(being, self.attacks(attack)) <= hitDie:
             attDie = int(input('What is the result of a ' +
                                self.attacks[attack] + ' roll? '))
             being.changeHealth(-attDie)
+            
+            if being.getHealth()[0] != 0:
+                print('The health of', being.getName(), 'is now', being.getHealth())
+            else:
+                print('You have slain',being.getName()+'.')
+
+        elif hitDie < 10:
+            print(being.getName(), 'evades the attack.')
+
+        else:
+            print("The attack is blocked by the defender's armor.")
             
 
 class Character(SentientBeing):
@@ -87,6 +96,9 @@ class Character(SentientBeing):
         self.__level = level
         self.__money = money
         super().__init__(name, experience, health, species, attacks, armor)
+
+        if self not in charList:
+            charList.append(self)
 
     ### GETTERS ###
     def chrSheet(self):
@@ -113,10 +125,60 @@ class Character(SentientBeing):
         print('Any level-dependent attacks must be changed manually.')
         self.__level += 1
 
+    ### OTHERS ###
+    def minForHit(self, being, attackRoll):
+        dArmor = being.getArmor()
+
+        # good for level 1-3
+        # armor : minimum roll
+        # (yes, lower armor numbers are better)
+        table = {9:10,8:11,7:12,6:13,5:14,4:15,3:16,2:17}
+
+        return table[dArmor]
+
 class Monster(SentientBeing):
     ### CONSTRUCTOR ###
     def __init__(self, name, experience, health, species, attacks, armor):
         super().__init__(name, experience, health, species, attacks, armor)
+
+        if self not in monsList:
+            monsList.append(self)
+
+    ### OTHERS ###
+    def minForHit(self, being, attRoll):
+        dArmor = being.getArmor()
+
+        # splitting something formatted like '3d6 + 1' into [[3,6],1]
+        # works without modifier or with negative modifier
+        if '+' not in attRoll and '-' not in attRoll:
+            attRoll += '+0'
+        attRoll       = attRoll.split('+')
+        attRoll       = attRoll.split('-')
+        attRoll[1]    = int(attRoll[1])
+        attRoll[0]    = attRoll[0].split('d')
+        attRoll[0][0] = int(attRoll[0][0])
+        attRoll[0][1] = int(attRoll[0][1])
+
+        numDice = attRoll[0][0]
+
+        if numDice >= 11:
+            table = {9:0,8:1,7:2,6:3,5:4,4:5,3:6,2:7}
+        elif numDice in [9,10]:
+            table = {9:2,8:3,7:4,6:5,5:6,4:7,3:8,2:9}
+        elif numDice in [7,8]:
+            table = {9:4,8:5,7:6,6:7,5:8,4:9,3:10,2:11}
+        elif (numDice in [5,6]) or (numDice == 4 and attRoll[1]>0):
+            table = {9:5,8:6,7:7,6:8,5:9,4:10,3:11,2:12}
+        elif numDice == 4 or (numDice == 3 and attRoll[1]>0):
+            table = {9:6,8:7,7:8,6:9,5:10,4:11,3:12,2:13}
+        elif numDice == 3 or (numDice == 2 and attRoll[1]>0):
+            table = {9:8,8:9,7:10,6:11,5:12,4:13,3:14,2:15}
+        elif numDice == 2 or attRoll[1]>1:
+            table = {9:9,8:10,7:11,6:12,5:13,4:14,3:15,2:16}
+        else:
+            table = {9:10,8:11,7:12,6:13,5:14,4:15,3:16,2:17}
+        
+        return table[dArmor]
 
 monsList = [Monster('Imp 1',40,[7,7],'Imp',{'bite':'2d6'},4)]
 
@@ -132,7 +194,7 @@ def dice(quantity, sides):
         total += roll
 
     print('Rolls:', ' '.join(dice))
-    print('Sum:', total)
+    print('Sum:  ', total)
     return total
 
 
@@ -266,7 +328,7 @@ def combat():
 
             # When something dies in combat, it's off the list.
             for char in combatants:
-                if char.getHealth()[0] == 0:
+                if not bool(char):
                     combatants.remove(char)
                     if com in chars:
                         chars.remove(char)
