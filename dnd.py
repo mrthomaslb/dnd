@@ -4,16 +4,6 @@
 # CS 1 Final Project
 ##########################################
 
-"""
-QUESTIONS FOR NOVAK
-1. Why isn't combat recognizing variables that we defined?
-Because eval() opens a new terminal, it doesn't recognize your variables.
-Do it with a dictionary instead.
-
-2. How do we get charList and monsList to print strings of the objects?
-__repr__()
-"""
-
 chars = {}
 monst = {}
 
@@ -76,9 +66,6 @@ class SentientBeing:
     ### OTHERS ###
     def __str__(self):
         return self.__name
-
-    def __repr__(self):
-        return str(self)
 
     def __bool__(self):
         if self.__health[0] == 0:
@@ -182,8 +169,8 @@ class Character(SentientBeing):
         self.__money = money
         super().__init__(name, experience, health, species, attacks, armor)
 
-        if self.__name not in chars:
-            chars[self.__name] = self
+        if name not in chars:
+            chars[name] = self
 
     ### GETTERS ###
     def chrSheet(self):
@@ -214,10 +201,10 @@ class Monster(SentientBeing):
     def __init__(self, name, experience, health, species, attacks, armor):
         super().__init__(name, experience, health, species, attacks, armor)
 
-        if self.__name not in monst:
-            monst[self.__name] = self
+        if name not in monst:
+            monst[name] = self
 
-# monsList = [Monster('Imp 1', 40, [7, 7], 'Imp', {'bite': '2d6'}, 4)]
+# monst = [Monster('Imp 1', 40, [7, 7], 'Imp', {'bite': '2d6'}, 4)]
 
 ########################################################################################################################
 
