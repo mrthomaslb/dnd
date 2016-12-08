@@ -18,6 +18,18 @@ class SentientBeing:
         self.__species = species
         self.attacks = attacks
         self.__armor = armor  # integer
+        self.combatDict = {'attack': self.attack,
+        	'changeHealth': self.changeHealth,
+            'getHealth': self.getHealth,
+            'setMaxHealth': self.setMaxHealth,
+            'getArmor': self.getArmor,
+            'setArmor': self.setArmor,
+            'getExp': self.getExp,
+            'addExp': self.addExp,
+            'getName': self.getName(),
+            'getSpecies': self.getSpecies,
+            'bool': self.__bool__}
+
 
     ### GETTERS ###
     def getHealth(self):
@@ -39,29 +51,30 @@ class SentientBeing:
     def changeHealth(self, change):
         current = self.__health[0]
         maximum = self.__health[1]
-        if current + change < 0:
+        if current + int(change) < 0:
             self.__health[0] = 0
-        elif current + change > maximum:
+        elif current + int(change) > maximum:
             self.__health[0] = maximum
         else:
-            self.__health[0] = self.__health[0] + change
+            self.__health[0] = self.__health[0] + int(change)
 
     def setMaxHealth(self, val):
-        self.__health[1] = val
+        self.__health[1] = int(val)
         if self.__health[0] > self.__health[1]:
             self.__health[0] = self.__health[1]
 
     def addExp(self, change):
-        self.__experience += change
+        self.__experience += float(change)
 
-    def setArmor(self, newArm):
-        if newArm > 0 and newArm < 10:
-            if newArm is int:
-                self.__armor = newArm
+    def setArmor(self, new):
+        arm = int(new)
+        if isinstance(arm, int) is False:
+            print("You must enter an integer from 1 to 9")
+        else:
+            if arm > 0 and arm < 10:
+                self.__armor = int(arm)
             else:
                 print("You must enter an integer from 1 to 9")
-        else:
-            print("You must enter an integer from 1 to 9")
 
     ### OTHERS ###
     def __str__(self):
@@ -83,6 +96,7 @@ class SentientBeing:
             table = {9: 10, 8: 11, 7: 12, 6: 13, 5: 14, 4: 15, 3: 16, 2: 17}
 
             return table[dArmor]
+
         elif type(self) == Monster:
             dArmor = being.getArmor()
 
@@ -90,6 +104,7 @@ class SentientBeing:
             # works without modifier or with negative modifier
             if '+' not in attRoll and '-' not in attRoll:
                 attRoll += '+0'
+                attRoll = attRoll.split('+')
             elif '+' in attRoll:
                 attRoll = attRoll.split('+')
             elif '-' in attRoll:
@@ -123,9 +138,10 @@ class SentientBeing:
     def attack(self, being):
         print('What is the attack of choice?')
         print(self.attacks)
-        attack = ''
+        possibilities = 0
+        attack = input('  > ')
         while attack not in self.attacks:
-            for a in attacks:
+            for a in self.attacks:
                 if attack in a:
                     possibilities += 1
                     fullName = a
@@ -168,7 +184,10 @@ class Character(SentientBeing):
         self.__level = level
         self.__money = money
         super().__init__(name, experience, health, species, attacks, armor)
-
+        self.combatDict['playerName'] = self.playerName
+        self.combatDict['getLevel'] = self.getLevel
+        self.combatDict['lvlUp'] = self.lvlUp
+        
         if name not in chars:
             chars[name] = self
 
@@ -188,7 +207,6 @@ class Character(SentientBeing):
         return self.__level
 
     ### SETTERS ###
-
     def lvlUp(self):
         print('Any level-dependent attacks must be changed manually.')
         self.__level += 1
@@ -204,7 +222,7 @@ class Monster(SentientBeing):
         if name not in monst:
             monst[name] = self
 
-# monst = [Monster('Imp 1', 40, [7, 7], 'Imp', {'bite': '2d6'}, 4)]
+# Monster('Imp 1', 40, [7, 7], 'Imp', {'bite': '2d6'}, 4)
 
 ########################################################################################################################
 
@@ -267,12 +285,12 @@ def newMonster():
     return Monster(name, experience, health, species, attacks, armor)
 
 
-def save(charList):
+def save(chars):
     filename = input('Filename: ')
     fh = open(filename, 'w')
 
     fh.write('CHARS\n')
-    for char in charList:
+    for char in chars.values():
         attackKeys = ''
         attackVals = ''
         for key in char.attacks:
@@ -294,8 +312,8 @@ def save(charList):
 
 def load():
     """This function reads in from a save file and returns a list of character
-objects. For ease of use, user should say 'charList = load()'."""
-    characters = subList()
+objects. For ease of use, user should say 'chars = load()'."""
+    characters = {}
 
     filename = input('Filename: ')
     fh = open(filename, 'r')
@@ -304,7 +322,6 @@ objects. For ease of use, user should say 'charList = load()'."""
 
     line = fh.readline().strip("\n")  # first character
     while 'ENDCHARS' not in line:  # for each character
-        # print(line)
 
         # formatting into desired types
         args = line.split(':')
@@ -329,40 +346,46 @@ objects. For ease of use, user should say 'charList = load()'."""
         if '' in args[8]:
             del args[8]['']
 
-        characters.append(Character(*args))
+        characters[args[0]] = Character(*args)
         line = fh.readline().strip("\n")
 
     fh.close()
     return characters
 
-def combat():
-    chars = eval(input("Input the characters involved as a list []: "))
-    monst = eval(input("Input the monsters involved as a list []: "))
+  
+def combat(Chars, Monst):
 
-    combatants = chars + monst
+  	charList = list(Chars.values())
+  	monsList = list(Monst.values())
+    combatants = list(Chars.values()) + list(Monst.values())
+
     r.shuffle(combatants)
 
     print("\nThe order is:")
     for com in combatants:
         print('\t' + str(com))
 
-    while monst != [] and chars != []:
+    while monsList != [] and charList != []:
         for com in combatants:
             print('\n' + str(com).upper())
             action = input("What does the combatant do? When done with turn, type 'next' to continue.\n")
-            while action.lower().strip('\n') != "next":
-                eval(action)
+            functs = action.split("")
+            while functs[0].lower().strip('\n') != "next":
+            	if len(functs) == 1:
+                	com.combatDict[functs[0]]()
+                else:  # if len(functs) > 1
+                  	com.combatDict[functs[0]](functs[1])
 
             # When something dies in combat, it's off the list.
             for char in combatants:
                 if not bool(char):
                     combatants.remove(char)
-                    if com in chars:
-                        chars.remove(char)
-                    elif com in monst:
-                        monst.remove(char)
+                    if com in charList:
+                        charList.remove(char)
+                    elif com in monsList:
+                        monsList.remove(char)
 
-    if chars == []:
+    if charList == []:
         print("Battle is over. The winner is the monsters.")
-    elif monst == []:
+    elif monsList == []:
         print("Battle is over. The winner is the characters.")
