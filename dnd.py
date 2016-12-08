@@ -3,8 +3,8 @@ import random as r
 charList = []
 monsList = []
 
-class SentientBeing:
 
+class SentientBeing:
     ### CONSTRUCTOR ###
     def __init__(self, name, experience, health, species, attacks, armor):
         self.__name = name
@@ -20,13 +20,13 @@ class SentientBeing:
 
     def getArmor(self):
         return self.__armor
-    
+
     def getExp(self):
         return self.__experience
 
     def getSpecies(self):
         return self.__species
-    
+
     def getName(self):
         return self.__name
 
@@ -47,10 +47,16 @@ class SentientBeing:
             self.__health[0] = self.__health[1]
 
     def addExp(self, change):
-        pass
+        self.__experience += change
 
     def setArmor(self, newArm):
-        pass
+        if newArm > 0 and newArm < 10:
+            if newArm is int:
+                self.__armor = newArm
+            else:
+                print("You must enter an integer from 1 to 9")
+        else:
+            print("You must enter an integer from 1 to 9")
 
     ### OTHERS ###
     def __str__(self):
@@ -59,7 +65,55 @@ class SentientBeing:
     def __bool__(self):
         if self.__health[0] == 0:
             return False
-        else: return True
+        else:
+            return True
+
+    def minForHit(self, being, attRoll):
+        if type(self) == Character:
+            dArmor = being.getArmor()
+
+            # good for level 1-3
+            # armor : minimum roll
+            # (yes, lower armor numbers are better)
+            table = {9: 10, 8: 11, 7: 12, 6: 13, 5: 14, 4: 15, 3: 16, 2: 17}
+
+            return table[dArmor]
+        elif type(self) == Monster:
+            dArmor = being.getArmor()
+
+            # splitting something formatted like '3d6 + 1' into [[3,6],1]
+            # works without modifier or with negative modifier
+            if '+' not in attRoll and '-' not in attRoll:
+                attRoll += '+0'
+            elif '+' in attRoll:
+                attRoll = attRoll.split('+')
+            elif '-' in attRoll:
+                attRoll = attRoll.split('-')
+            attRoll[1] = int(attRoll[1])
+            attRoll[0] = attRoll[0].split('d')
+            attRoll[0][0] = int(attRoll[0][0])
+            attRoll[0][1] = int(attRoll[0][1])
+
+            numDice = attRoll[0][0]
+
+            if numDice >= 11:
+                table = {9: 0, 8: 1, 7: 2, 6: 3, 5: 4, 4: 5, 3: 6, 2: 7}
+            elif numDice in [9, 10]:
+                table = {9: 2, 8: 3, 7: 4, 6: 5, 5: 6, 4: 7, 3: 8, 2: 9}
+            elif numDice in [7, 8]:
+                table = {9: 4, 8: 5, 7: 6, 6: 7, 5: 8, 4: 9, 3: 10, 2: 11}
+            elif (numDice in [5, 6]) or (numDice == 4 and attRoll[1] > 0):
+                table = {9: 5, 8: 6, 7: 7, 6: 8, 5: 9, 4: 10, 3: 11, 2: 12}
+            elif numDice == 4 or (numDice == 3 and attRoll[1] > 0):
+                table = {9: 6, 8: 7, 7: 8, 6: 9, 5: 10, 4: 11, 3: 12, 2: 13}
+            elif numDice == 3 or (numDice == 2 and attRoll[1] > 0):
+                table = {9: 8, 8: 9, 7: 10, 6: 11, 5: 12, 4: 13, 3: 14, 2: 15}
+            elif numDice == 2 or attRoll[1] > 1:
+                table = {9: 9, 8: 10, 7: 11, 6: 12, 5: 13, 4: 14, 3: 15, 2: 16}
+            else:
+                table = {9: 10, 8: 11, 7: 12, 6: 13, 5: 14, 4: 15, 3: 16, 2: 17}
+
+            return table[dArmor]
 
     def attack(self, being):
         print('What is the attack of choice?')
@@ -68,25 +122,27 @@ class SentientBeing:
         while attack not in self.attacks:
             attack = input('>> ')
 
-        #we could change this to eval so we could use dice function
+        # we could change this to eval so we could use dice function
         hitDie = int(input('What is the result of a 1d20 roll? '))
 
-        if self.minForHit(being, self.attacks(attack)) <= hitDie:
+        if self.minForHit(being, self.attacks[attack]) <= hitDie:
             attDie = int(input('What is the result of a ' +
                                self.attacks[attack] + ' roll? '))
             being.changeHealth(-attDie)
-            
+
             if being.getHealth()[0] != 0:
                 print('The health of', being.getName(), 'is now', being.getHealth())
             else:
-                print('You have slain',being.getName()+'.')
+                print('You have slain', being.getName() + '.')
 
         elif hitDie < 10:
             print(being.getName(), 'evades the attack.')
 
         else:
             print("The attack is blocked by the defender's armor.")
-            
+
+
+########################################################################################################################
 
 class Character(SentientBeing):
     '''Constructor'''
@@ -105,10 +161,6 @@ class Character(SentientBeing):
         pass
         # print out a character sheet nicely (centered name, etc.)
 
-    # put this in SentientBeing class
-    def getName(self):
-        return self.__name
-
     def getMoney(self):
         # Possibly change this to print it nicely later
         return self.__money
@@ -125,16 +177,7 @@ class Character(SentientBeing):
         print('Any level-dependent attacks must be changed manually.')
         self.__level += 1
 
-    ### OTHERS ###
-    def minForHit(self, being, attackRoll):
-        dArmor = being.getArmor()
-
-        # good for level 1-3
-        # armor : minimum roll
-        # (yes, lower armor numbers are better)
-        table = {9:10,8:11,7:12,6:13,5:14,4:15,3:16,2:17}
-
-        return table[dArmor]
+########################################################################################################################
 
 class Monster(SentientBeing):
     ### CONSTRUCTOR ###
@@ -144,43 +187,9 @@ class Monster(SentientBeing):
         if self not in monsList:
             monsList.append(self)
 
-    ### OTHERS ###
-    def minForHit(self, being, attRoll):
-        dArmor = being.getArmor()
+# monsList = [Monster('Imp 1', 40, [7, 7], 'Imp', {'bite': '2d6'}, 4)]
 
-        # splitting something formatted like '3d6 + 1' into [[3,6],1]
-        # works without modifier or with negative modifier
-        if '+' not in attRoll and '-' not in attRoll:
-            attRoll += '+0'
-        attRoll       = attRoll.split('+')
-        attRoll       = attRoll.split('-')
-        attRoll[1]    = int(attRoll[1])
-        attRoll[0]    = attRoll[0].split('d')
-        attRoll[0][0] = int(attRoll[0][0])
-        attRoll[0][1] = int(attRoll[0][1])
-
-        numDice = attRoll[0][0]
-
-        if numDice >= 11:
-            table = {9:0,8:1,7:2,6:3,5:4,4:5,3:6,2:7}
-        elif numDice in [9,10]:
-            table = {9:2,8:3,7:4,6:5,5:6,4:7,3:8,2:9}
-        elif numDice in [7,8]:
-            table = {9:4,8:5,7:6,6:7,5:8,4:9,3:10,2:11}
-        elif (numDice in [5,6]) or (numDice == 4 and attRoll[1]>0):
-            table = {9:5,8:6,7:7,6:8,5:9,4:10,3:11,2:12}
-        elif numDice == 4 or (numDice == 3 and attRoll[1]>0):
-            table = {9:6,8:7,7:8,6:9,5:10,4:11,3:12,2:13}
-        elif numDice == 3 or (numDice == 2 and attRoll[1]>0):
-            table = {9:8,8:9,7:10,6:11,5:12,4:13,3:14,2:15}
-        elif numDice == 2 or attRoll[1]>1:
-            table = {9:9,8:10,7:11,6:12,5:13,4:14,3:15,2:16}
-        else:
-            table = {9:10,8:11,7:12,6:13,5:14,4:15,3:16,2:17}
-        
-        return table[dArmor]
-
-monsList = [Monster('Imp 1',40,[7,7],'Imp',{'bite':'2d6'},4)]
+########################################################################################################################
 
 def dice(quantity, sides):
     # look into making functions of 1 or 2 parameters
@@ -234,7 +243,7 @@ def newMonster():
     health1 = int(input("What is the max health of this monster? "))
     health0 = health1
     health = [health0, health1]
-    armor = input("What armor class does the monster have? ")
+    armor = int(input("What armor class does the monster have? "))
     attacks = {}
     print("\nYou will need to set the monsters attacks separately.")
     return Monster(name, experience, health, species, attacks, armor)
@@ -242,8 +251,8 @@ def newMonster():
 
 def save(charList):
     filename = input('Filename: ')
-    fh = open(filename,'w')
-    
+    fh = open(filename, 'w')
+
     fh.write('CHARS\n')
     for char in charList:
         attackKeys = ''
@@ -257,12 +266,13 @@ def save(charList):
                       str(char.getExp()), str(char.getHealth())[1:-1],
                       char.getSpecies(), str(char.getArmor()),
                       str(char.getMoney())[1:-1], attacks]
-        fh.write(':'.join(attributes)+'\n')
-        
+        fh.write(':'.join(attributes) + '\n')
+
     fh.write('ENDCHARS\n')
-    
+
     fh.close()
     print('Character data saved.')
+
 
 def load():
     """This function reads in from a save file and returns a list of character
@@ -307,7 +317,8 @@ objects. For ease of use, user should say 'charList = load()'."""
     fh.close()
     return characters
 
-#not accepting chars list right
+
+# not accepting chars list right
 def combat():
     chars = eval(input("Input the characters involved as a list []: "))
     monst = eval(input("Input the monsters involved as a list []: "))
@@ -321,7 +332,7 @@ def combat():
 
     while monst != [] and chars != []:
         for com in combatants:
-            print('\n'+str(com).upper())
+            print('\n' + str(com).upper())
             action = input("What does the combatant do? When done with turn, type 'next' to continue.\n")
             while action.lower().strip('\n') != "next":
                 eval(action)
