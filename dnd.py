@@ -7,11 +7,17 @@
 """
 QUESTIONS FOR NOVAK
 1. Why isn't combat recognizing variables that we defined?
+Because eval() opens a new terminal, it doesn't recognize your variables.
+Do it with a dictionary instead.
+
 2. How do we get charList and monsList to print strings of the objects?
+__repr__()
 """
 
-import random as r
+chars = {}
+monst = {}
 
+import random as r
 
 class SentientBeing:
     ### CONSTRUCTOR ###
@@ -70,6 +76,9 @@ class SentientBeing:
     ### OTHERS ###
     def __str__(self):
         return self.__name
+
+    def __repr__(self):
+        return str(self)
 
     def __bool__(self):
         if self.__health[0] == 0:
@@ -173,8 +182,8 @@ class Character(SentientBeing):
         self.__money = money
         super().__init__(name, experience, health, species, attacks, armor)
 
-        if self not in charList:
-            charList.append(self)
+        if self.__name not in chars:
+            chars[self.__name] = self
 
     ### GETTERS ###
     def chrSheet(self):
@@ -205,8 +214,8 @@ class Monster(SentientBeing):
     def __init__(self, name, experience, health, species, attacks, armor):
         super().__init__(name, experience, health, species, attacks, armor)
 
-        if self not in monsList:
-            monsList.append(self)
+        if self.__name not in monst:
+            monst[self.__name] = self
 
 # monsList = [Monster('Imp 1', 40, [7, 7], 'Imp', {'bite': '2d6'}, 4)]
 
@@ -339,8 +348,6 @@ objects. For ease of use, user should say 'charList = load()'."""
     fh.close()
     return characters
 
-
-# not accepting chars list right
 def combat():
     chars = eval(input("Input the characters involved as a list []: "))
     monst = eval(input("Input the monsters involved as a list []: "))
@@ -372,24 +379,3 @@ def combat():
         print("Battle is over. The winner is the monsters.")
     elif monst == []:
         print("Battle is over. The winner is the characters.")
-
-
-class subList(list):
-    def __init__(self):
-        super().__init__()
-        self.new()
-
-    def new(self):
-        # self = []
-        return []
-
-    def __str__(self):
-        # if type(self) == list and isinstance(self[0], SentientBeing) is True:
-        names = []
-        for item in self:
-            names.append(item.getName())
-        string = '[' + ', '.join(names) + ']'
-        return string
-
-charList = subList()
-monsList = subList()
