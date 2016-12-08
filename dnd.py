@@ -1,8 +1,5 @@
 import random as r
 
-charList = []
-monsList = []
-
 
 class SentientBeing:
     ### CONSTRUCTOR ###
@@ -85,7 +82,6 @@ class SentientBeing:
             # works without modifier or with negative modifier
             if '+' not in attRoll and '-' not in attRoll:
                 attRoll += '+0'
-                attRoll = attRoll.split('+')
             elif '+' in attRoll:
                 attRoll = attRoll.split('+')
             elif '-' in attRoll:
@@ -119,10 +115,9 @@ class SentientBeing:
     def attack(self, being):
         print('What is the attack of choice?')
         print(self.attacks)
-        attack = '\t'
-        #make it accept partial names
+        attack = ''
         while attack not in self.attacks:
-            attack = input('  > ')
+            attack = input('>> ')
 
         # we could change this to eval so we could use dice function
         hitDie = int(input('What is the result of a 1d20 roll? '))
@@ -143,8 +138,8 @@ class SentientBeing:
         else:
             print("The attack is blocked by the defender's armor.")
 
-
 ########################################################################################################################
+
 
 class Character(SentientBeing):
     '''Constructor'''
@@ -181,6 +176,7 @@ class Character(SentientBeing):
 
 ########################################################################################################################
 
+
 class Monster(SentientBeing):
     ### CONSTRUCTOR ###
     def __init__(self, name, experience, health, species, attacks, armor):
@@ -189,9 +185,10 @@ class Monster(SentientBeing):
         if self not in monsList:
             monsList.append(self)
 
-monsList = [Monster('Imp 1', 40, [7, 7], 'Imp', {'bite': '2d6'}, 4)]
+# monsList = [Monster('Imp 1', 40, [7, 7], 'Imp', {'bite': '2d6'}, 4)]
 
 ########################################################################################################################
+
 
 def dice(quantity, sides):
     # look into making functions of 1 or 2 parameters
@@ -279,14 +276,14 @@ def save(charList):
 def load():
     """This function reads in from a save file and returns a list of character
 objects. For ease of use, user should say 'charList = load()'."""
-    characters = []
+    characters = subList()
 
     filename = input('Filename: ')
     fh = open(filename, 'r')
 
     line = fh.readline()  # first line of file(CHARS)
 
-    line = fh.readline()[:-1]  # first character
+    line = fh.readline().strip("\n")  # first character
     while 'ENDCHARS' not in line:  # for each character
         # print(line)
 
@@ -314,7 +311,7 @@ objects. For ease of use, user should say 'charList = load()'."""
             del args[8]['']
 
         characters.append(Character(*args))
-        line = fh.readline()
+        line = fh.readline().strip("\n")
 
     fh.close()
     return characters
@@ -352,3 +349,24 @@ def combat():
         print("Battle is over. The winner is the monsters.")
     elif monst == []:
         print("Battle is over. The winner is the characters.")
+
+
+class subList(list):
+    def __init__(self):
+        super().__init__()
+        self.new()
+
+    def new(self):
+        # self = []
+        return []
+
+    def __str__(self):
+        # if type(self) == list and isinstance(self[0], SentientBeing) is True:
+        names = []
+        for item in self:
+            names.append(item.getName())
+        string = '[' + ', '.join(names) + ']'
+        return string
+
+charList = subList()
+monsList = subList()
