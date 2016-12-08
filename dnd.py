@@ -85,6 +85,7 @@ class SentientBeing:
             # works without modifier or with negative modifier
             if '+' not in attRoll and '-' not in attRoll:
                 attRoll += '+0'
+                attRoll = attRoll.split('+')
             elif '+' in attRoll:
                 attRoll = attRoll.split('+')
             elif '-' in attRoll:
@@ -118,9 +119,10 @@ class SentientBeing:
     def attack(self, being):
         print('What is the attack of choice?')
         print(self.attacks)
-        attack = ''
+        attack = '\t'
+        #make it accept partial names
         while attack not in self.attacks:
-            attack = input('>> ')
+            attack = input('  > ')
 
         # we could change this to eval so we could use dice function
         hitDie = int(input('What is the result of a 1d20 roll? '))
@@ -187,7 +189,7 @@ class Monster(SentientBeing):
         if self not in monsList:
             monsList.append(self)
 
-# monsList = [Monster('Imp 1', 40, [7, 7], 'Imp', {'bite': '2d6'}, 4)]
+monsList = [Monster('Imp 1', 40, [7, 7], 'Imp', {'bite': '2d6'}, 4)]
 
 ########################################################################################################################
 
@@ -284,7 +286,7 @@ objects. For ease of use, user should say 'charList = load()'."""
 
     line = fh.readline()  # first line of file(CHARS)
 
-    line = fh.readline()  # first character
+    line = fh.readline()[:-1]  # first character
     while 'ENDCHARS' not in line:  # for each character
         # print(line)
 
