@@ -1,3 +1,15 @@
+##########################################
+# Thomas Lehman-Borer & Rachel Chamberlain
+# Dungeons and Dragons Facilitator
+# CS 1 Final Project
+##########################################
+
+"""
+QUESTIONS FOR NOVAK
+1. Why isn't combat recognizing variables that we defined?
+2. How do we get charList and monsList to print strings of the objects?
+"""
+
 import random as r
 
 
@@ -117,7 +129,18 @@ class SentientBeing:
         print(self.attacks)
         attack = ''
         while attack not in self.attacks:
-            attack = input('>> ')
+            for a in attacks:
+                if attack in a:
+                    possibilities += 1
+                    fullName = a
+            if possibilities == 1:
+                attack = fullName
+            elif possibilities > 1:
+                print('Which attack did you mean?')
+                attack = input('  > ')
+            else:
+                print('That is not an available attack.')
+                attack = input('  > ')
 
         # we could change this to eval so we could use dice function
         hitDie = int(input('What is the result of a 1d20 roll? '))
