@@ -1,13 +1,20 @@
-##########################################
-# Thomas Lehman-Borer & Rachel Chamberlain
-# Dungeons and Dragons Facilitator
-# CS 1 Final Project
-##########################################
+############################################
+# Thomas Lehman-Borer & Rachel Chamberlain #
+#     Dungeons and Dragons Facilitator     #
+#            CS 1 Final Project            #
+############################################
+
+# Notes to self:
+# 1. Make sure to remove test monsters from the monst dictionary before submitting.
+# 2. Include an example .txt file for the profs to test the code with.
+# 3. Remove any functions that are no longer in the scope of the project.
+# 4. Remove any comments to ourselves regarding changing/fixing/adding something.
+
+import random as r
 
 chars = {}
 monst = {}
 
-import random as r
 
 class SentientBeing:
     ### CONSTRUCTOR ###
@@ -19,17 +26,15 @@ class SentientBeing:
         self.attacks = attacks
         self.__armor = armor  # integer
         self.combatDict = {'attack': self.attack,
-        	'changeHealth': self.changeHealth,
-            'getHealth': self.getHealth,
-            'setMaxHealth': self.setMaxHealth,
-            'getArmor': self.getArmor,
-            'setArmor': self.setArmor,
-            'getExp': self.getExp,
-            'addExp': self.addExp,
-            'getName': self.getName(),
-            'getSpecies': self.getSpecies,
-            'bool': self.__bool__}
-
+                           'changeHealth': self.changeHealth,
+                           'getHealth': self.getHealth,
+                           'setMaxHealth': self.setMaxHealth,
+                           'getArmor': self.getArmor,
+                           'setArmor': self.setArmor,
+                           'getExp': self.getExp,
+                           'addExp': self.addExp,
+                           'getName': self.getName(),
+                           'getSpecies': self.getSpecies}
 
     ### GETTERS ###
     def getHealth(self):
@@ -56,7 +61,7 @@ class SentientBeing:
         elif current + int(change) > maximum:
             self.__health[0] = maximum
         else:
-            self.__health[0] = self.__health[0] + int(change)
+            self.__health[0] += int(change)
 
     def setMaxHealth(self, val):
         self.__health[1] = int(val)
@@ -66,15 +71,11 @@ class SentientBeing:
     def addExp(self, change):
         self.__experience += float(change)
 
-    def setArmor(self, new):
-        arm = int(new)
-        if isinstance(arm, int) is False:
-            print("You must enter an integer from 1 to 9")
+    def setArmor(self, newArm):
+        if newArm > 0 and newArm < 10:
+            self.__armor = newArm
         else:
-            if arm > 0 and arm < 10:
-                self.__armor = int(arm)
-            else:
-                print("You must enter an integer from 1 to 9")
+            print("You must enter an integer from 1 to 9")
 
     ### OTHERS ###
     def __str__(self):
@@ -87,17 +88,16 @@ class SentientBeing:
             return True
 
     def minForHit(self, being, attRoll):
-        if type(self) == Character:
+        if isinstance(self, Character):
             dArmor = being.getArmor()
 
-            # good for level 1-3
+            # good for character levels 1-3; information for higher levels to come later
             # armor : minimum roll
-            # (yes, lower armor numbers are better)
             table = {9: 10, 8: 11, 7: 12, 6: 13, 5: 14, 4: 15, 3: 16, 2: 17}
 
             return table[dArmor]
 
-        elif type(self) == Monster:
+        elif isinstance(self, Monster):
             dArmor = being.getArmor()
 
             # splitting something formatted like '3d6 + 1' into [[3,6],1]
@@ -136,10 +136,17 @@ class SentientBeing:
             return table[dArmor]
 
     def attack(self, being):
+        if not isinstance(being, SentientBeing):
+            if being in chars:
+                being = chars[being]
+            elif being in monst:
+                being = monst[being]
+            else:
+                return "This is not a valid being to attack"
         print('What is the attack of choice?')
         print(self.attacks)
         possibilities = 0
-        attack = input('  > ')
+        attack = input(' >> ')
         while attack not in self.attacks:
             for a in self.attacks:
                 if attack in a:
@@ -149,12 +156,11 @@ class SentientBeing:
                 attack = fullName
             elif possibilities > 1:
                 print('Which attack did you mean?')
-                attack = input('  > ')
+                attack = input(' >> ')
             else:
                 print('That is not an available attack.')
-                attack = input('  > ')
+                attack = input(' >> ')
 
-        # we could change this to eval so we could use dice function
         hitDie = int(input('What is the result of a 1d20 roll? '))
 
         if self.minForHit(being, self.attacks[attack]) <= hitDie:
@@ -169,7 +175,7 @@ class SentientBeing:
 
         elif hitDie < 10:
             print(being.getName(), 'evades the attack.')
-
+            
         else:
             print("The attack is blocked by the defender's armor.")
 
@@ -177,8 +183,7 @@ class SentientBeing:
 
 
 class Character(SentientBeing):
-    '''Constructor'''
-
+    ### CONSTRUCTOR ###
     def __init__(self, name, player, level, experience, health, species, armor, money, attacks):
         self.__player = player
         self.__level = level
@@ -187,17 +192,12 @@ class Character(SentientBeing):
         self.combatDict['playerName'] = self.playerName
         self.combatDict['getLevel'] = self.getLevel
         self.combatDict['lvlUp'] = self.lvlUp
-        
+
         if name not in chars:
             chars[name] = self
 
     ### GETTERS ###
-    def chrSheet(self):
-        pass
-        # print out a character sheet nicely (centered name, etc.)
-
     def getMoney(self):
-        # Possibly change this to print it nicely later
         return self.__money
 
     def playerName(self):
@@ -222,17 +222,12 @@ class Monster(SentientBeing):
         if name not in monst:
             monst[name] = self
 
-# Monster('Imp 1', 40, [7, 7], 'Imp', {'bite': '2d6'}, 4)
-
 ########################################################################################################################
 
 
 def dice(quantity, sides):
-    # look into making functions of 1 or 2 parameters
-    # in this case, it would assume 1 die if there were 1 parameter given
     dice = []
     total = 0
-
     for i in range(quantity):
         roll = r.randint(1, sides)
         dice.append(str(roll))
@@ -248,9 +243,9 @@ def newChar():
 
     name = input('What is the character name? ')
     player = input("What is the player name? ")
+
     level = int(input("What level is the character? "))
     experience = float(input("How much experience does the character have? "))
-
     health1 = int(input("What is the character's max health? "))
     health0 = int(input("What is the character's current health? "))
     health = [health0, health1]
@@ -352,12 +347,12 @@ objects. For ease of use, user should say 'chars = load()'."""
     fh.close()
     return characters
 
-  
-def combat(Chars, Monst):
 
-  	charList = list(Chars.values())
-  	monsList = list(Monst.values())
-    combatants = list(Chars.values()) + list(Monst.values())
+def combat(Chars, Monst):
+    charList = list(Chars.values())
+    monsList = list(Monst.values())
+
+    combatants = charList + monsList
 
     r.shuffle(combatants)
 
@@ -368,22 +363,33 @@ def combat(Chars, Monst):
     while monsList != [] and charList != []:
         for com in combatants:
             print('\n' + str(com).upper())
-            action = input("What does the combatant do? When done with turn, type 'next' to continue.\n")
-            functs = action.split("")
-            while functs[0].lower().strip('\n') != "next":
-            	if len(functs) == 1:
-                	com.combatDict[functs[0]]()
-                else:  # if len(functs) > 1
-                  	com.combatDict[functs[0]](functs[1])
+
+            continuing = True
+            while continuing:
+                action = input("What does the combatant do? When done with turn, type 'next' to continue.\n >> ")
+                functs = action.split()
+                if functs[0] == 'next':
+                    continuing = False
+                elif functs[0] not in com.combatDict:
+                    print("This is not a valid action.")
+                elif len(functs) > 1:
+                    com.combatDict[functs[0]](*functs[1:])
+                else:  # if len(functs) == 1
+                    if 'get' == functs[0][:3]:
+                        print(com.combatDict[functs[0]]())
+                    else:
+                        com.combatDict[functs[0]]()
 
             # When something dies in combat, it's off the list.
             for char in combatants:
                 if not bool(char):
                     combatants.remove(char)
-                    if com in charList:
-                        charList.remove(char)
-                    elif com in monsList:
-                        monsList.remove(char)
+                if char in charList:
+                    charList.remove(char)
+                    del chars[char.getName()]
+                elif char in monsList:
+                    monsList.remove(char)
+                    del monst[char.getName()]
 
     if charList == []:
         print("Battle is over. The winner is the monsters.")
