@@ -9,15 +9,15 @@ from random import shuffle
 chars = {}
 monst = {}
 
-
 class SentientBeing:
     '''This class is a parent class to Character and Monster. It holds simple methods common to both subclasses,
     such as basic getters for health and experience, and basic setters like changing health and armor. In addition,
     this class has the methods minForHit and attack, where the former is only used in the latter and thus is private.'''
     ### CONSTRUCTOR ###
     def __init__(self, name, experience, health, species, attacks, armor):
-        # Initialize common attributes and create a dictionary of functions
-        # that can be used in the combat function (near the end of the file).
+        '''Initialize common attributes and create a dictionary of functions
+        that can be used in the combat function (near the end of the file).'''
+        
         self.__name = name  # string
         self.__experience = experience  # float
         self.__health = health  # list with two items -> [current, max]
@@ -55,8 +55,8 @@ class SentientBeing:
     ### SETTERS ###
     # These are setter methods to modify attributes of the SentientBeing (SB) instances.
     def changeHealth(self, change):
-        # This method takes the parameter change which is then added to the current health of the being.
-        # To decrease the current health, simply enter a negative integer.
+        ''' This method takes the parameter change which is then added to the current health of the being.
+        To decrease the current health, simply enter a negative integer.'''
         current = self.__health[0]
         maximum = self.__health[1]
         # Define if/else statements to make sure the health doesn't go below zero or above the max
@@ -68,19 +68,19 @@ class SentientBeing:
             self.__health[0] += int(change)
 
     def setMaxHealth(self, val):
-        # This method changes the max amount of health a being can have and decreases the current
-        # if it becomes greater than the max when changing the max.
+        '''This method changes the max amount of health a being can have and decreases the current
+        if it becomes greater than the max when changing the max.'''
         self.__health[1] = int(val)
         if self.__health[0] > self.__health[1]:
             self.__health[0] = self.__health[1]
 
     def addExp(self, change):
-        # This method adds to the experience, which is a float
+        '''This method adds to the experience, which is a float'''
         self.__experience += float(change)
 
     def setArmor(self, newArm):
-        # This method sets the armor class of the being.
-        # Note: smaller values for the armor class equates to better armor.
+        '''This method sets the armor class of the being.
+        Note: smaller values for the armor class equates to better armor.'''
         if newArm > 0 and newArm < 10:
             self.__armor = newArm
         else:  # else statement to make sure the armor class is in the right range.
@@ -88,23 +88,23 @@ class SentientBeing:
 
     ### OTHERS ###
     def __str__(self):
-        # Overload function so that printing the SB instance gives only the name
-        # (and not a gibberish pointer).
+        '''Overload function so that printing the SB instance gives only the name
+        (and not a gibberish pointer).'''
         return self.__name
 
     def __bool__(self):
-        # This overload is mainly for knowing when a SB instance is dead (current health = 0).
-        # It is used in combat to know when to remove them from the appropriate lists/dictionary.
+        '''This overload is mainly for knowing when a SB instance is dead (current health = 0).
+        It is used in combat to know when to remove them from the appropriate lists/dictionary.'''
         if self.__health[0] == 0:
             return False
         else:
             return True
 
     def __minForHit(self, being, attRoll):
-        # This private function determines what the minimum die roll is in order to be able to hit the
-        # SB. This is its own function because we need to calculate this with armor (for all SB) and level for
-        # Characters and experience for Monsters. This function starts as an if/else statement to know which
-        # calculation method to use.
+        '''This private function determines what the minimum die roll is in order to be able to hit the
+        SB. This is its own function because we need to calculate this with armor (for all SB) and level for
+        Characters and experience for Monsters. This function starts as an if/else statement to know which
+        calculation method to use.'''
         if isinstance(self, Character):
             dArmor = being.getArmor()
             # good for character levels 1-3; information for higher levels to come later
@@ -152,11 +152,11 @@ class SentientBeing:
             return table[dArmor]  # # returns the min roll value for the monster
 
     def attack(self, being):
-        # This method is how characters attack other characters. It takes the param of the being to be attacked
-        # (being, "the target") and used attacks info from the attacker (self) to ask the user what attack to use.
-        # The user gets to roll the die, but the function tells the user how they should calculate the damage
-        # done by the attack and the user just tells the function what the result is. This function tells you if an
-        # attack hits the target and, if it does, it deducts from the health automatically.
+        '''This method is how characters attack other characters. It takes the param of the being to be attacked
+        (being, "the target") and used attacks info from the attacker (self) to ask the user what attack to use.
+        The user gets to roll the die, but the function tells the user how they should calculate the damage
+        done by the attack and the user just tells the function what the result is. This function tells you if an
+        attack hits the target and, if it does, it deducts from the health automatically.'''
 
         # If statement to make sure that being, not an instance of a SentientBeing subclass,
         # becomes one or is labeled as not attackable. When using combat, a string is passed as being
@@ -215,7 +215,6 @@ class SentientBeing:
 
 ########################################################################################################################
 
-
 class Character(SentientBeing):
     '''This is a subclass of SentientBeing which adds attributes and methods which aren't used in Monster.
     It all the methods of its parent class and adds attributes and getters/setters for money and level
@@ -252,7 +251,6 @@ class Character(SentientBeing):
 
 ########################################################################################################################
 
-
 class Monster(SentientBeing):
     '''This is a subclass of SentientBeing and has no unique attributes but it's easier to keep track of being types 
     with the additonal subclass. Future plans include subclasses of Monster.'''
@@ -265,12 +263,12 @@ class Monster(SentientBeing):
 
 ########################################################################################################################
 
-
 def newChar():
-    '''newChar is a function to make a new character in the game. If asks you step-by-step for attributes and
+    '''newChar is a function to make a new character in the game. It asks you step-by-step for attributes and
     constructs the Character object based on responses. Attacks will be added directly the attacks dictionary
     for the Character. This function returns the Character object, so use [name] = newChar() to get
     your new character, where [name] is replaced with the actual name of the character.'''
+    
     print("Begin new character construction.\n")
 
     name = input('What is the character name? ').replace(" ", "")
@@ -301,6 +299,7 @@ def newChar():
 def newMonster():
     '''This function is very similar to newChar only it makes Monster objects. It is designed and used in the 
     same way (user input for each attribute and the function constructs and returns the Monster object.'''
+    
     print("Begin new monster construction.\n")
     name = input('What shall we call the monster? ').replace(" ", "")
     species = input("What is the species of this monster? ")
@@ -352,7 +351,7 @@ def load():
 
     fh.readline()  # first line of file(CHARS)
 
-    line = fh.readline().strip("\n")  # reads rhe first character and constructs it in the while loop
+    line = fh.readline().strip("\n")  # reads the first character and constructs it in the while loop
     while 'ENDCHARS' not in line:  # for each character
         # formatting into desired types
         args = line.split(':')
@@ -378,7 +377,7 @@ def load():
         if '' in args[8]:
             del args[8]['']
 
-        # add the Character name to the dictionary as the key and the Character object as rhe value.
+        # add the Character name to the dictionary as the key and the Character object as the value.
         characters[args[0]] = Character(*args)
         # Read the next line to either add another character to the dictionary or stop the while loop
         # if the line is "ENDCHARS"
@@ -396,6 +395,7 @@ def combat(Chars, Monst):
     takes parameters, just type a space between the funciton and the parameter and the combat function interprets.
     Current note: even if one side is totally dead, because of the for loop, it must finish going through the
     combatants before a winner is declared. (Maybe not still the case??)'''
+    
     charList = list(Chars.values())
     monsList = list(Monst.values())
 
