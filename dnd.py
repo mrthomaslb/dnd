@@ -175,7 +175,7 @@ class SentientBeing:
 
         elif hitDie < 10:
             print(being.getName(), 'evades the attack.')
-            
+
         else:
             print("The attack is blocked by the defender's armor.")
 
@@ -313,7 +313,8 @@ objects. For ease of use, user should say 'chars = load()'."""
     filename = input('Filename: ')
     fh = open(filename, 'r')
 
-    line = fh.readline()  # first line of file(CHARS)
+    fh.readline()  # first line of file(CHARS)
+    # Took out the line = for the first readline (above) because I don't think it makes a difference.
 
     line = fh.readline().strip("\n")  # first character
     while 'ENDCHARS' not in line:  # for each character
