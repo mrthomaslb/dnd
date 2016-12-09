@@ -32,7 +32,7 @@ class SentientBeing:
                            'setArmor': self.setArmor,
                            'getExp': self.getExp,
                            'addExp': self.addExp,
-                           'getName': self.getName(),
+                           'getName': self.getName,
                            'getSpecies': self.getSpecies}
 
     ### GETTERS ###
